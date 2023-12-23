@@ -28,6 +28,21 @@ class Customer {
     );
     return results.rows.map(c => new Customer(c));
   }
+ /** Search for a customer by name. */
+  static async searchByName(query) {
+    const result = await db.query(
+      `SELECT id,
+      first_name AS "firstName",
+      last_name As "lastName",
+      phone,
+      notes
+      FROM customers
+      WHERE first_name ILIKE $1 or last_name ILIKE $1
+      ORDER BY last_name, first_name`,
+      [`%${query}%`]
+    );
+    return result.rows.map(c => new Customer(c))
+  }
 
   /** get a customer by ID. */
 
