@@ -4,7 +4,21 @@
 
 <a class="btn btn-primary" style="float: right" href="/add/">Add a Customer</a></p>
 
-<h1>Customers</h1>
+<h1>Top Customers</h1>
+
+{% if topCustomers.length > 0 %}
+<ol>
+  {% for customer in topCustomers %}
+  <li><a href="/{{ customer.id}}/">{{ customer.fullName }}</a> -Reservations: {{ customer.reservation_count}}</li>
+  {% endfor %}
+</ol>
+{% else %}
+<p>No Top customers found</p>
+{% endif %}
+
+<hr>
+
+<h1>All Customers</h1>
 
 <ul style="column-count: 4">
   {% for customer in customers %}

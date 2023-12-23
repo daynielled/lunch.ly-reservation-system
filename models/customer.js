@@ -14,6 +14,27 @@ class Customer {
     this.notes = notes;
   }
 
+  
+  /** methods for getting/setting notes (keep as empty string, not NULL) */
+
+  set notes(val) {
+    this._notes = val || "";
+  }
+
+  get notes() {
+    return this._notes;
+  }
+
+  /** methods for getting/setting phone #. */
+
+  set phone(val) {
+    this._phone = val || null;
+  }
+
+  get phone() {
+    return this._phone;
+  }
+
   /** find all customers. */
 
   static async all() {
@@ -66,6 +87,23 @@ class Customer {
     }
 
     return new Customer(customer);
+  }
+
+  static async getTopCustomers() {
+    const results = await db.query(
+     `SELECT customers.id,
+          customers.first_name AS "firstName",
+          customers.last_name AS "lastName",
+          customers.phone,
+          customers.notes AS "customer_notes",
+          COUNT(reservations.id) AS "reservation_count"
+      FROM customers
+      LEFT JOIN reservations ON customers.id = reservations.customer_id
+      GROUP BY customers.id
+      ORDER BY reservation_count DESC
+      LIMIT 10`
+    );
+    return results.rows.map(c => new Customer(c));
   }
 
   /** get all reservations for this customer. */

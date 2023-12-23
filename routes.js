@@ -7,12 +7,19 @@ const Reservation = require("./models/reservation");
 
 const router = new express.Router();
 
-/** Homepage: show list of customers. */
+/** Homepage: show list of customers and top customers. */
 
 router.get("/", async function (req, res, next) {
   try {
     const customers = await Customer.all();
-    return res.render("customer_list.html", { customers });
+    const topCustomers = await Customer.getTopCustomers();
+    topCustomers.forEach(customer => {
+      customer.reservation_count = parseInt(customer.reservation_count, 10)
+      if (isNaN(customer.reservation_count) || customer.reservation_count === null) {
+        customer.reservation_count = 0;
+      }
+    });
+    return res.render("customer_list.html", { customers, topCustomers });
   } catch (err) {
     return next(err);
   }
@@ -29,6 +36,8 @@ router.get("/search/", async function (req, res, next) {
     return next(err);
   }
 });
+
+
 /** Form to add a new customer. */
 
 router.get("/add/", async function (req, res, next) {
